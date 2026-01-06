@@ -91,3 +91,54 @@ it('should handle async operations', async () => {
 2.  **Use `whenStable()`**: Update tests to `await fixture.whenStable()` instead of calling `detectChanges()` multiple times.
 3.  **Leverage Signals**: Use `inputBinding` for cleaner component tests.
 4.  **Vitest Native**: Use `vi.useFakeTimers()` for async logic instead of Angular's `fakeAsync`.
+
+## 5. Lessons Learned & Configuration
+
+During the implementation of these standards in `angFin3`, several critical configuration requirements were identified:
+
+### Vitest & AnalogJS Plugin
+For Vitest to correctly compile Angular components (especially those using Signals and newer syntax), the `@analogjs/vite-plugin-angular` is **mandatory**.
+
+*   **vitest.config.ts**:
+    ```typescript
+    import angular from '@analogjs/vite-plugin-angular';
+    export default defineConfig({
+      plugins: [angular()],
+      // ...
+    });
+    ```
+    *Note: It is a default export.*
+
+### Path Aliases in Testing
+`tsconfig.spec.json` must explicitly verify or inherit `paths` from `tsconfig.json`. Ensure the `files` or `include` array covers `src/test-setup.ts`.
+
+### Signal Input Testing
+While `inputBinding` is promising, the most robust way to test Signal Inputs in v21 currently is finding the `componentRef` and setting the input directly:
+
+```typescript
+fixture = TestBed.createComponent(MyComponent);
+fixture.componentRef.setInput('myInput', 'value');
+await fixture.whenStable();
+```
+
+### Mock Data Validity
+When using `provideIcons` or other global registries, ensuring your mock data uses **valid keys** is crucial. Invalid keys (e.g., using 'test' instead of a real icon name) can cause runtime failures in the test runner even if compilation succeeds.
+
+## 6. What to Avoid
+
+When adopting these modern testing standards, explicitly avoid the following outdated patterns:
+
+### 1. Avoid `fixture.detectChanges()`
+In zoneless testing, this method forces a change detection run that may conflict with the natural scheduler. **Do not use it** to trigger updates unless you are specifically testing migration scenarios. rely on `await fixture.whenStable()`.
+
+### 2. Avoid `fakeAsync` and `tick()`
+These utilities are tightly coupled with `Zone.js`. Using them in a zoneless environment will lead to unpredictable behavior or test failures. Use **Vitest's native timer mocks** (`vi.useFakeTimers()`, `vi.advanceTimersByTime()`) instead.
+
+### 3. Avoid Jasmine Globals
+If you are using Vitest, avoid `jasmine.createSpy()` or `jasmine.clock()`. Use the `vi` utility (`vi.fn()`, `vi.spyOn()`) to ensure compatibility and leverage Vitest's performance.
+
+### 4. Avoid Over-configured TestBeds
+Do not import `BrowserAnimationsModule` or `NoopAnimationsModule` unless absolutely necessary. Zoneless setup often handles animation frames differently. Usually, providing the specific component and necessary providers is sufficient.
+
+### 5. Avoid Manual Signal Writes for Inputs
+Do not attempt to write to a signal input property directly (e.g., `component.id.set('val')` - this will fail as inputs are read-only). Always use `fixture.componentRef.setInput()`.

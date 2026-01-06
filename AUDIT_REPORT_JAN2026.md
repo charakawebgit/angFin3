@@ -1044,9 +1044,9 @@ Phase 3: Documentation
 - [ ] Improve UI/UX
 
 ### v0.5.0 - PWA (6-8 weeks)
-- [ ] Add service worker
-- [ ] Create manifest.webmanifest
-- [ ] Test offline functionality
+- [x] Configure Vitest for Zoneless
+- [x] Create Testing Guidelines
+- [x] Fix test setup errorsffline functionality
 - [ ] Optimize bundle size
 
 ### v1.0.0 - Production Release (8-12 weeks)
