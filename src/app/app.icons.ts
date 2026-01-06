@@ -24,7 +24,29 @@ const APP_ICONS = {
     AlertCircle: icons.CircleAlert,
     Check: icons.Check,
     Copy: icons.Copy,
-    MoreHorizontal: icons.Ellipsis
+    MoreHorizontal: icons.Ellipsis,
+    // Fix missing icons
+    CalendarDays: icons.CalendarDays,
+    Target: icons.Target,
+    TrendingUp: icons.TrendingUp,
+    BadgeDollarSign: icons.BadgeDollarSign,
+    Repeat: icons.Repeat,
+    Cpu: icons.Cpu,
+    RefreshCw: icons.RefreshCw,
+    Activity: icons.Activity,
+    Home: icons.House,
+    Calendar: icons.Calendar,
+    Scale: icons.Scale,
+    CircleDollarSign: icons.CircleDollarSign,
+    PieChart: icons.ChartPie,
+    Percent: icons.Percent,
+    Briefcase: icons.Briefcase,
+    ShieldAlert: icons.ShieldAlert,
+    BarChart: icons.ChartBar,
+    Hash: icons.Hash,
+    Binary: icons.Binary,
+    BarChart3: icons.ChartColumn,
+    Calculator: icons.Calculator
 } as const;
 
 /**

@@ -6,7 +6,7 @@ const CONFIG: CalculatorConfig = {
     title: 'Sharpe Ratio',
     subtitle: 'Risk-adjusted return',
     description: 'Measure the excess return per unit of deviation in an investment asset or a trading strategy.',
-    icon: 'shantell-sans',
+    icon: 'activity',
     category: 'Analysis',
     fields: [
         { key: 'portfolioReturn', label: 'Expected Return (%)', type: 'number', defaultValue: 12, suffix: '%', required: true },
