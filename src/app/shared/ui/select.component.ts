@@ -10,7 +10,7 @@ import { LucideAngularModule } from 'lucide-angular';
       @if (label()) {
         <label
           [for]="id()"
-          class="text-sm font-medium ml-1 text-slate-700"
+          class="text-sm font-medium ml-1 text-text-main"
         >
           {{ label() }}
         </label>
@@ -20,7 +20,7 @@ import { LucideAngularModule } from 'lucide-angular';
           [id]="id()"
           [value]="value()"
           (change)="onValueChange($event)"
-          class="w-full h-10 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 font-medium shadow-sm outline-none appearance-none transition-all cursor-pointer focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:bg-slate-50"
+          class="w-full h-10 px-4 py-2 bg-surface border border-border-default rounded-lg text-sm text-text-main font-medium shadow-sm outline-none appearance-none transition-all cursor-pointer focus:border-primary focus:ring-1 focus:ring-primary hover:bg-surface-hover"
         >
           @for (option of options(); track option.value) {
             <option [value]="option.value">{{ option.label }}</option>
@@ -29,7 +29,7 @@ import { LucideAngularModule } from 'lucide-angular';
         
         <!-- Chevron Icon -->
         <div
-          class="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors text-slate-400 group-focus-within:text-blue-600"
+          class="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors text-text-muted group-focus-within:text-primary"
         >
           <lucide-icon name="chevron-down" class="w-4 h-4" />
         </div>

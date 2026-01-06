@@ -13,17 +13,17 @@ import { KeyValuePipe } from '@angular/common';
         <div class="flex items-center gap-2 mb-1">
           <label
             [for]="id()"
-            class="text-sm font-medium ml-1 text-slate-700"
+            class="text-sm font-medium ml-1 text-text-main"
           >
             {{ label() }}
           </label>
           @if (description()) {
             <div class="group/tooltip relative flex items-center justify-center cursor-help">
-              <lucide-icon name="info" class="w-4 h-4 text-slate-400 hover:text-blue-600 transition-colors" />
+              <lucide-icon name="info" class="w-4 h-4 text-text-muted hover:text-primary transition-colors" />
               <!-- Tooltip -->
-              <div class="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 w-48 p-2 bg-slate-900 text-white text-xs rounded-lg shadow-xl opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 z-50 pointer-events-none text-center">
+              <div class="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 w-48 p-2 bg-text-main text-primary-foreground text-xs rounded-lg shadow-xl opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 z-50 pointer-events-none text-center">
                 {{ description() }}
-                <div class="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                <div class="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-text-main"></div>
               </div>
             </div>
           }
@@ -34,7 +34,7 @@ import { KeyValuePipe } from '@angular/common';
         <!-- Prefix Icon/Text -->
         @if (prefix()) {
           <span
-            class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none font-medium transition-colors text-slate-400 group-focus-within:text-blue-600"
+            class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none font-medium transition-colors text-text-muted group-focus-within:text-primary"
           >
             {{ prefix() }}
           </span>
@@ -47,7 +47,7 @@ import { KeyValuePipe } from '@angular/common';
           [formControl]="control()"
           (focus)="focused.emit()"
           (blur)="blurred.emit()"
-          class="w-full h-10 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 font-medium shadow-sm outline-none transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-50 disabled:text-slate-500"
+          class="w-full h-10 bg-surface border border-border-default rounded-lg text-sm text-text-main font-medium shadow-sm outline-none transition-all placeholder:text-text-muted focus:border-primary focus:ring-1 focus:ring-primary disabled:bg-surface-subtle disabled:text-text-muted"
           [class.pl-10]="prefix()"
           [class.pl-4]="!prefix()"
           [class.pr-10]="suffix()"
@@ -60,7 +60,7 @@ import { KeyValuePipe } from '@angular/common';
         <!-- Suffix Icon/Text -->
         @if (suffix()) {
           <span
-            class="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none font-medium transition-colors text-slate-400 group-focus-within:text-blue-600"
+            class="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none font-medium transition-colors text-text-muted group-focus-within:text-primary"
           >
             {{ suffix() }}
           </span>

@@ -12,6 +12,39 @@ const castToArray = (val: unknown): Record<string, unknown>[] => Array.isArray(v
   imports: [LucideAngularModule, TableComponent, CurrencyPipe, PercentPipe, DecimalPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+      <!-- Compact View for Mobile Bottom Bar -->
+      @if (viewMode() === 'compact') {
+        <div class="h-20 flex items-center justify-between gap-4">
+          @if (isValid() && config().results.length > 0) {
+            @let primaryResult = config().results[0];
+            @let val = castToNumber(results()[0]);
+            <div class="flex flex-col justify-center flex-grow min-w-0">
+              <div class="text-xs font-semibold uppercase tracking-wider text-text-muted truncate">{{ primaryResult.label }}</div>
+              <div class="text-2xl font-bold tracking-tight text-text-main truncate">
+                @switch (primaryResult.type) {
+                  @case ('currency') { {{ val | currency:'USD':'symbol':'1.0-2' }} }
+                  @case ('percent') { {{ val | percent:'1.2-2' }} }
+                  @default { {{ val | number:'1.0-4' }} }
+                }
+              </div>
+            </div>
+            @if (config().results.length > 1) {
+              <div class="flex items-center gap-1 text-xs text-text-muted font-medium whitespace-nowrap">
+                <lucide-icon name="more-horizontal" class="w-4 h-4" />
+                +{{ config().results.length - 1 }} more
+              </div>
+            }
+          } @else {
+            <div class="flex items-center justify-center w-full text-text-muted text-sm">
+              <lucide-icon [name]="config().icon" class="w-5 h-5 mr-2 opacity-50" />
+              Enter values above
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Full View for Desktop/Tablet -->
+      @if (viewMode() === 'full') {
       <div class="space-y-6">
         <div class="flex items-center gap-4">
            <h3 class="text-xs font-bold text-text-muted uppercase tracking-widest whitespace-nowrap">
@@ -91,12 +124,14 @@ const castToArray = (val: unknown): Record<string, unknown>[] => Array.isArray(v
           }
         </div>
       </div>
+      }
   `
 })
 export class CalculatorResultsComponent {
   config = input.required<CalculatorConfig>();
   results = input.required<ResultValue[]>();
   isValid = input.required<boolean>();
+  viewMode = input<'full' | 'compact'>('full');
 
   copiedField = signal<string | null>(null);
 

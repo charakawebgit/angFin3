@@ -28,8 +28,8 @@ type ControlValue = number | string | (string | number)[];
               <div class="space-y-4">
                 @if (group.name !== 'default') {
                    <div class="flex items-center gap-4">
-                     <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">{{ group.name }}</h3>
-                     <div class="h-px bg-slate-100 w-full"></div>
+                     <h3 class="text-xs font-bold text-text-muted uppercase tracking-widest whitespace-nowrap">{{ group.name }}</h3>
+                     <div class="h-px bg-surface-hover w-full"></div>
                    </div>
                 }
                 
@@ -67,7 +67,7 @@ type ControlValue = number | string | (string | number)[];
             <button 
                 type="button" 
                 (click)="fg.reset()"
-                class="text-xs font-bold text-slate-400 hover:text-red-600 uppercase tracking-widest flex items-center gap-2 transition-colors group"
+                class="text-xs font-bold text-text-muted hover:text-red-600 uppercase tracking-widest flex items-center gap-2 transition-colors group"
             >
                 <lucide-icon name="trash-2" class="w-4 h-4 transition-transform group-hover:scale-110" />
                 Clear Inputs

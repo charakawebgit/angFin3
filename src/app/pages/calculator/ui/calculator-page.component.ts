@@ -52,7 +52,7 @@ import { CALCULATOR_REGISTRY } from '@entities/calculator/model/registry';
            </div>
 
            <!-- Right Pane: Results -->
-           <div class="flex-grow bg-slate-50 p-6 lg:p-8 overflow-y-auto">
+           <div class="flex-grow bg-surface-subtle p-6 lg:p-8 overflow-y-auto">
              <div class="max-w-5xl mx-auto space-y-8">
                <app-calculator-results 
                  [config]="config()!" 
@@ -67,7 +67,7 @@ import { CALCULATOR_REGISTRY } from '@entities/calculator/model/registry';
         </div>
 
         <!-- Mobile Sticky Result Bar -->
-        <div class="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-t border-slate-200 shadow-2xl h-20 safe-area-bottom px-4">
+        <div class="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl border-t border-border-default shadow-2xl h-20 safe-area-bottom px-4">
              <app-calculator-results 
                [config]="config()!" 
                [results]="results()" 
@@ -77,15 +77,15 @@ import { CALCULATOR_REGISTRY } from '@entities/calculator/model/registry';
         </div>
       </div>
     } @else {
-      <div class="min-h-screen flex flex-col items-center justify-center py-20 text-center space-y-4 bg-slate-50">
-        <div class="w-20 h-20 bg-white rounded-2xl flex items-center justify-center border border-slate-200 shadow-sm">
-            <lucide-icon name="search-x" class="w-10 h-10 text-slate-300" />
+      <div class="min-h-screen flex flex-col items-center justify-center py-20 text-center space-y-4 bg-surface-subtle">
+        <div class="w-20 h-20 bg-surface rounded-2xl flex items-center justify-center border border-border-default shadow-sm">
+            <lucide-icon name="search-x" class="w-10 h-10 text-text-muted" />
         </div>
         <div>
-          <h2 class="text-xl font-bold text-slate-900">Calculator Not Found</h2>
-          <p class="text-slate-500">The tool you are looking for doesn't seem to exist.</p>
+          <h2 class="text-xl font-bold text-text-main">Calculator Not Found</h2>
+          <p class="text-text-muted">The tool you are looking for doesn't seem to exist.</p>
         </div>
-        <a routerLink="/" class="px-6 h-12 inline-flex items-center justify-center bg-slate-900 text-white rounded-xl font-bold hover:bg-black transition-colors">
+        <a routerLink="/" class="px-6 h-12 inline-flex items-center justify-center bg-text-main text-primary-foreground rounded-xl font-bold hover:bg-text-main/90 transition-colors">
           Return to Directory
         </a>
       </div>

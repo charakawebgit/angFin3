@@ -11,6 +11,7 @@
     --color-surface-hover: var(--color-zinc-100);
 
     --color-border-default: var(--color-zinc-200);
+    
     --color-text-main: var(--color-zinc-900);
     --color-text-muted: var(--color-zinc-500);
 
@@ -19,6 +20,7 @@
 
     /* Animation durations */
     --animate-duration-fast: 150ms;
+    --animate-duration-normal: 300ms;
 }
 
 @layer base {
