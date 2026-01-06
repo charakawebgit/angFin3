@@ -1,4 +1,4 @@
-import { Component, computed, signal, input, ChangeDetectionStrategy, linkedSignal } from '@angular/core';
+import { Component, computed, signal, input, ChangeDetectionStrategy, linkedSignal, inject, effect } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { RouterLink } from '@angular/router';
 
@@ -6,7 +6,7 @@ import { CalculatorData } from '@entities/calculator/model/types';
 import { CalculatorFormComponent } from '@features/calculator-workspace/ui/calculator-form.component';
 import { CalculatorResultsComponent } from '@features/calculator-workspace/ui/calculator-results.component';
 import { CalculatorInfoComponent } from '@features/calculator-workspace/ui/calculator-info.component';
-import { CALCULATOR_REGISTRY } from '@entities/calculator/model/registry';
+import { CalculatorService } from '@entities/calculator/model/calculator.service';
 
 
 @Component({
@@ -96,21 +96,38 @@ export class CalculatorPageComponent {
   // Route input binding
   readonly id = input<string>();
 
+  private readonly calculatorService = inject(CalculatorService);
+
+  constructor() {
+    effect(() => {
+      const cfg = this.config();
+      if (cfg) {
+        this.calculatorService.setActive(cfg);
+      } else {
+        this.calculatorService.clearActive();
+      }
+    });
+  }
+
   protected readonly isValid = signal(false);
 
   // Derived state from ID: Find config from registry
   protected readonly config = computed(() => {
     const id = this.id();
     if (!id) return undefined;
-    
-    return CALCULATOR_REGISTRY.find(c => c.id === id);
+
+    // Side effect: Update active calculator in service
+    // Note: In a pure signal world, we might want to avoid side effects in computed
+    // but for now we just read from the service. 
+    // Ideally the service would track the route itself or we set it in an effect.
+    return this.calculatorService.getById(id);
   });
 
   // State - Initialize with default values from config
   protected readonly data = linkedSignal<CalculatorData>(() => {
     const cfg = this.config();
     if (!cfg) return {};
-    
+
     const initialData: CalculatorData = {};
     for (const field of cfg.fields) {
       initialData[field.key] = field.defaultValue as CalculatorData[string];

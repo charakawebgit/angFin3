@@ -95,10 +95,10 @@ Phase 3: Release Strategy (planning)
 ## 2. State Management Architecture - HIGH PRIORITY 🔴
 
 ### Current State
-- **Signal Usage:** Not detected in business logic
-- **Service Pattern:** Traditional service with methods only
-- **Reactivity:** Limited to RxJS where present
-- **Change Detection:** Zoneless configured but underutilized
+- **Signal Usage:** ✅ Implemented in CalculatorService
+- **Service Pattern:** Signal-based with computed properties
+- **Reactivity:** Fully reactive state
+- **Change Detection:** Zoneless ready
 
 ### Issues
 1. **No Signals Implementation**
@@ -232,6 +232,8 @@ Phase 4: E2E Setup (optional, for v1.0)
   - Add Playwright
   - Test critical user journeys
   - Automate regression testing
+
+See [ANGULAR_V21_TESTING_GUIDELINES.md](docs/ANGULAR_V21_TESTING_GUIDELINES.md) for detailed standards.
 ```
 
 **Vitest config addition:**
@@ -1030,7 +1032,7 @@ Phase 3: Documentation
 - [ ] Add basic documentation
 
 ### v0.2.0 - State & Testing (2-4 weeks)
-- [ ] Refactor to signal-based state
+- [x] Refactor to signal-based state
 - [ ] Achieve 70% test coverage
 - [ ] Add component tests
 - [ ] Document architecture

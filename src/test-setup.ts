@@ -1,1 +1,1 @@
-import '@analogjs/vite-plugin-angular/setup';
+// import '@analogjs/vite-plugin-angular/setup';

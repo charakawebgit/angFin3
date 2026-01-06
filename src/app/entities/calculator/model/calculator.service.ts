@@ -1,5 +1,5 @@
-import { Injectable, signal } from '@angular/core';
-import { CalculatorConfig, CalculatorDef } from './types';
+import { Injectable, signal, computed } from '@angular/core';
+import { CalculatorConfig } from './types';
 import { CALCULATOR_REGISTRY } from './registry';
 
 /**
@@ -15,6 +15,33 @@ export class CalculatorService {
     private readonly _activeConfig = signal<CalculatorConfig | null>(null);
     readonly activeConfig = this._activeConfig.asReadonly();
 
+    // Registry as signal for reactivity
+    private readonly _registry = signal<readonly CalculatorConfig[]>(CALCULATOR_REGISTRY);
+    readonly registry = this._registry.asReadonly();
+
+    // Computed derived state
+    readonly hasActiveCalculator = computed(() => this._activeConfig() !== null);
+    readonly activeCalculatorId = computed(() => this._activeConfig()?.id ?? null);
+
+    // Computed views
+    readonly calculatorsByCategory = computed(() => {
+        const configs = this._registry();
+        const groups = new Map<string, CalculatorConfig[]>();
+
+        for (const config of configs) {
+            const category = config.category || 'Other';
+            if (!groups.has(category)) {
+                groups.set(category, []);
+            }
+            groups.get(category)!.push(config);
+        }
+
+        return Array.from(groups.entries()).map(([category, calculators]) => ({
+            category,
+            calculators: calculators.sort((a, b) => a.title.localeCompare(b.title))
+        })).sort((a, b) => a.category.localeCompare(b.category));
+    });
+
     setActive(config: CalculatorConfig): void {
         this._activeConfig.set(config);
     }
@@ -24,10 +51,6 @@ export class CalculatorService {
     }
 
     getById(id: string): CalculatorConfig | undefined {
-        return CALCULATOR_REGISTRY.find(c => c.id === id);
-    }
-
-    getAll(): readonly CalculatorConfig[] {
-        return CALCULATOR_REGISTRY;
+        return this._registry().find(c => c.id === id);
     }
 }

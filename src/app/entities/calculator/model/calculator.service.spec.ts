@@ -8,11 +8,7 @@ describe('CalculatorService', () => {
     // mockConfig removed (unused)
 
     beforeEach(() => {
-        // Fallback to manual instantiation if TestBed is flaky in this env
         service = new CalculatorService();
-        service.registerCalculators([
-            { id: 'tvm', title: 'TVM', description: '', category: '', icon: '' }
-        ]);
     });
 
     it('should be created', () => {
