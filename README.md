@@ -1,59 +1,92 @@
-# AngFin3
+# AngFin3 - Financial Calculator Suite
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.3.
+> Modern, high-precision financial calculators built with Angular 21
 
-## Development server
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)]()
+[![License](https://img.shields.io/badge/license-MIT-green.svg)]()
 
-To start a local development server, run:
+## ✨ Features
 
-```bash
-ng serve
-```
+- 📊 **20+ Financial Calculators** - TVM, WACC, Black-Scholes, NPV, IRR, and more
+- 🎯 **High Precision Math** - Decimal.js for accurate financial calculations
+- ⚡ **Modern Angular** - Zoneless change detection, Signal-based state
+- 🎨 **Beautiful UI** - Tailwind CSS with dark mode support
+- 📱 **Responsive Design** - Works on desktop, tablet, and mobile
+- 🧪 **Well Tested** - Comprehensive unit and integration tests
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 📦 Installation
 
 ```bash
-ng generate --help
+npm install
+npm start
 ```
 
-## Building
+Visit http://localhost:4200
 
-To build the project run:
+## 🧮 Available Calculators
+
+### Time Value of Money
+- Present Value (PV)
+- Future Value (FV)
+- Payment (PMT)
+- Interest Rate (I/Y)
+- Number of Periods (N)
+
+### Equity Analysis
+- CAPM (Capital Asset Pricing Model)
+- DDM (Dividend Discount Model)
+- Black-Scholes Option Pricing
+- DuPont ROE Analysis
+
+### Fixed Income
+- Bond Pricing
+- Yield to Maturity
+- Duration & Convexity
+
+[Full calculator list →](docs/CALCULATORS.md)
+
+## 🏗️ Architecture
+
+```
+src/app/
+├── entities/          # Domain entities (calculators, finance)
+│   ├── calculator/   # Calculator service & registry
+│   └── finance/      # Financial formulas & utilities
+├── features/         # Feature modules
+│   └── calculator-workspace/  # Calculator UI
+├── pages/           # Route pages
+├── shared/          # Shared components & utilities
+└── app.config.ts    # Application configuration
+```
+
+See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for details.
+
+## 🧪 Testing
 
 ```bash
-ng build
+npm test              # Run unit tests
+npm run test:coverage # Generate coverage report
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+// Note: Ensure you have vitest coverage configured as per roadmap
 
-## Running unit tests
+## 📚 Documentation
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+- [Architecture Guide](docs/ARCHITECTURE.md)
+- [Adding New Calculators](docs/ADDING_CALCULATORS.md)
+- [Formula Reference](docs/FORMULAS.md)
+- [Contributing Guide](CONTRIBUTING.md)
 
-```bash
-ng test
-```
+## 🤝 Contributing
 
-## Running end-to-end tests
+Contributions welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
 
-For end-to-end (e2e) testing, run:
+## 📄 License
 
-```bash
-ng e2e
-```
+MIT © [Your Name]
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 🙏 Acknowledgments
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- Decimal.js for high-precision arithmetic
+- Angular team for the amazing framework
+- Lucide for beautiful icons
