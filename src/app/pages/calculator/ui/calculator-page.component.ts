@@ -6,7 +6,7 @@ import { CalculatorData } from '@entities/calculator/model/types';
 import { CalculatorFormComponent } from '@features/calculator-workspace/ui/calculator-form.component';
 import { CalculatorResultsComponent } from '@features/calculator-workspace/ui/calculator-results.component';
 import { CalculatorInfoComponent } from '@features/calculator-workspace/ui/calculator-info.component';
-import TVM_CONFIG from '@entities/calculator/lib/configs/tvm.config';
+import { CALCULATOR_REGISTRY } from '@entities/calculator/model/registry';
 
 
 @Component({
@@ -101,10 +101,9 @@ export class CalculatorPageComponent {
   // Derived state from ID: Find config from registry
   protected readonly config = computed(() => {
     const id = this.id();
-    if (id === 'tvm') {
-      return TVM_CONFIG;
-    }
-    return undefined;
+    if (!id) return undefined;
+    
+    return CALCULATOR_REGISTRY.find(c => c.id === id);
   });
 
   // State - Initialize with default values from config

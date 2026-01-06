@@ -1,4 +1,3 @@
-// import { CalculatorDef } from './types'; // Unused
 import { CalculatorConfig } from './types';
 
 // TVM
@@ -40,7 +39,22 @@ import SHARPE_RATIO_CONFIG from '../lib/configs/ratios/sharpe-ratio.config';
 import SKEW_KURT_CONFIG from '../lib/configs/ratios/skew-kurt.config';
 import VARIANCE_STDDEV_CONFIG from '../lib/configs/ratios/variance-stddev.config';
 
-export const CALCULATOR_REGISTRY: CalculatorConfig[] = [
+/**
+ * Central registry of all calculator configurations.
+ * Organized by financial category for easy maintenance.
+ * 
+ * @remarks
+ * Each calculator config includes:
+ * - Metadata (id, title, description, icon, category)
+ * - Field definitions for user inputs
+ * - Result calculations and formatting
+ * 
+ * @example
+ * ```ts
+ * const tvmCalc = CALCULATOR_REGISTRY.find(c => c.id === 'tvm');
+ * ```
+ */
+export const CALCULATOR_REGISTRY: readonly CalculatorConfig[] = [
     TVM_CONFIG,
 
     // Real Estate

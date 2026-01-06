@@ -1,5 +1,11 @@
+/**
+ * Supported field types for calculator inputs.
+ */
 export type FieldType = 'number' | 'list' | 'select' | 'text';
 
+/**
+ * Configuration for a single calculator input field.
+ */
 export interface FieldConfig {
     key: string;
     label: string;
@@ -16,12 +22,25 @@ export interface FieldConfig {
     group?: string;
 }
 
+/**
+ * Data structure for calculator input values.
+ * Keys correspond to FieldConfig keys.
+ */
 export type CalculatorData = Record<string, number | string | number[] | undefined>;
 
+/**
+ * Possible return types from calculator result calculations.
+ */
 export type ResultValue = number | string | Record<string, unknown>[];
 
+/**
+ * Display format types for calculator results.
+ */
 export type ResultType = 'currency' | 'percent' | 'number' | 'text' | 'table';
 
+/**
+ * Column configuration for table-type results.
+ */
 export interface TableColumn {
     header: string;
     key: string;
@@ -29,6 +48,9 @@ export interface TableColumn {
     align?: 'left' | 'right' | 'center';
 }
 
+/**
+ * Configuration for a calculator result output.
+ */
 export interface ResultConfig<T = ResultValue> {
     label: string;
     type: 'currency' | 'percent' | 'number' | 'amortization' | 'black-scholes' | 'dupont' | 'table';
@@ -39,6 +61,9 @@ export interface ResultConfig<T = ResultValue> {
     calculate: (data: CalculatorData) => T;
 }
 
+/**
+ * Basic metadata for a calculator (used in lists/previews).
+ */
 export interface CalculatorDef {
     id: string;
     title: string;
@@ -47,6 +72,9 @@ export interface CalculatorDef {
     category: string;
 }
 
+/**
+ * Complete configuration for a calculator including all fields and calculation logic.
+ */
 export interface CalculatorConfig extends CalculatorDef {
     subtitle?: string;
     formula?: string;
