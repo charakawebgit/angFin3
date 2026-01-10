@@ -1,13 +1,14 @@
 import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
-import { ReactiveFormsModule, FormControl } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Field, FormValueControl } from '@angular/forms/signals';
 import { LucideAngularModule } from 'lucide-angular';
-import { KeyValuePipe } from '@angular/common';
+
 
 @Component({
-    selector: 'app-input',
-    imports: [ReactiveFormsModule, LucideAngularModule, KeyValuePipe],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    template: `
+  selector: 'app-input',
+  imports: [ReactiveFormsModule, LucideAngularModule, Field],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
     <div class="flex flex-col gap-1.5 w-full">
         <!-- Label & Popup Info -->
         <div class="flex items-center gap-2 mb-1">
@@ -44,7 +45,7 @@ import { KeyValuePipe } from '@angular/common';
           [id]="id()"
           [type]="type()"
           [placeholder]="placeholder()"
-          [formControl]="control()"
+          [field]="$any(control())"
           (focus)="focused.emit()"
           (blur)="blurred.emit()"
           class="w-full h-10 bg-surface border border-border-default rounded-lg text-sm text-text-main font-medium shadow-sm outline-none transition-all placeholder:text-text-muted focus:border-primary focus:ring-1 focus:ring-primary disabled:bg-surface-subtle disabled:text-text-muted"
@@ -71,10 +72,10 @@ import { KeyValuePipe } from '@angular/common';
       @if (hasError()) {
         <div class="text-[11px] text-red-600 font-bold mt-1 px-1 flex items-center gap-1 animate-in fade-in slide-in-from-top-1">
           <lucide-icon name="alert-circle" class="w-3 h-3" />
-          @if (control().errors; as errors) {
-            @for (error of errors | keyvalue; track $index) {
-              <span>{{ error.key }}</span>
-            }
+          @if (control().errors?.(); as errors) {
+             @for (error of errors; track $index) {
+                <span>{{ error.message }}</span>
+             }
           }
         </div>
       }
@@ -82,23 +83,25 @@ import { KeyValuePipe } from '@angular/common';
   `
 })
 export class InputComponent {
-    readonly id = input.required<string>();
-    readonly label = input<string>();
-    readonly description = input<string>();
-    readonly placeholder = input<string>('');
-    readonly type = input<'text' | 'number'>('text');
+  readonly id = input.required<string>();
+  readonly label = input<string>();
+  readonly description = input<string>();
+  readonly placeholder = input<string>('');
+  readonly type = input<'text' | 'number'>('text');
 
-    // Can be text or generic content, for now just text
-    readonly prefix = input<string>();
-    readonly suffix = input<string>();
+  // Can be text or generic content, for now just text
+  readonly prefix = input<string>();
+  readonly suffix = input<string>();
 
-    readonly control = input.required<FormControl>();
+  readonly control = input.required<FormValueControl<any>>();
 
-    readonly focused = output<void>();
-    readonly blurred = output<void>();
+  readonly focused = output<void>();
+  readonly blurred = output<void>();
 
-    // Derived state
-    protected hasError(): boolean {
-        return this.control().invalid && this.control().touched;
-    }
+  protected hasError(): boolean {
+    const ctrl = this.control();
+    const isInvalid = ctrl && typeof ctrl.invalid === 'function' ? ctrl.invalid() : false;
+    const isTouched = ctrl && typeof ctrl.touched === 'function' ? ctrl.touched() : false;
+    return isInvalid && isTouched;
+  }
 }

@@ -1,11 +1,12 @@
 import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
+import { Field, FormValueControl } from '@angular/forms/signals';
 
 @Component({
-    selector: 'app-select',
-    imports: [LucideAngularModule],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    template: `
+  selector: 'app-select',
+  imports: [LucideAngularModule, Field],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
     <div class="space-y-1.5 flex flex-col w-full">
       @if (label()) {
         <label
@@ -18,8 +19,7 @@ import { LucideAngularModule } from 'lucide-angular';
       <div class="relative group">
         <select
           [id]="id()"
-          [value]="value()"
-          (change)="onValueChange($event)"
+          [field]="$any(control())"
           class="w-full h-10 px-4 py-2 bg-surface border border-border-default rounded-lg text-sm text-text-main font-medium shadow-sm outline-none appearance-none transition-all cursor-pointer focus:border-primary focus:ring-1 focus:ring-primary hover:bg-surface-hover"
         >
           @for (option of options(); track option.value) {
@@ -38,15 +38,10 @@ import { LucideAngularModule } from 'lucide-angular';
   `
 })
 export class SelectComponent {
-    readonly id = input.required<string>();
-    readonly label = input<string>('');
-    readonly value = input.required<string | number>();
-    readonly options = input.required<{ label: string; value: string | number }[]>();
+  readonly id = input.required<string>();
+  readonly label = input<string>('');
+  readonly control = input.required<FormValueControl<any>>();
+  readonly options = input.required<{ label: string; value: string | number }[]>();
 
-    readonly changed = output<string>();
 
-    protected onValueChange(event: Event): void {
-        const select = event.target as HTMLSelectElement;
-        this.changed.emit(select.value);
-    }
 }

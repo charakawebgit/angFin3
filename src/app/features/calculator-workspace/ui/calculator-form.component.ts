@@ -1,28 +1,23 @@
-import { Component, input, output, ChangeDetectionStrategy, inject, signal, OnDestroy, effect, untracked, computed } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { FormGroup, FormControl, ReactiveFormsModule, Validators, NonNullableFormBuilder, ValidatorFn } from '@angular/forms';
+import { Component, input, output, ChangeDetectionStrategy, effect, computed, linkedSignal, untracked } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { InputComponent } from '@shared/ui/input.component';
 import { SelectComponent } from '@shared/ui/select.component';
+import { form, required, min, max, FormValueControl } from '@angular/forms/signals';
 
 import { CalculatorConfig, CalculatorData, FieldConfig } from '@entities/calculator/model/types';
-
-type ControlValue = number | string | (string | number)[];
 
 @Component({
   selector: 'app-calculator-form',
   imports: [
     LucideAngularModule,
     InputComponent,
-    SelectComponent,
-    ReactiveFormsModule
+    SelectComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    @if (formGroup(); as fg) {
+    @if (formResult(); as f) {
       <div class="space-y-6">
-        <form [formGroup]="fg" class="space-y-6">
+        <form class="space-y-6">
           <div class="space-y-8">
             @for (group of groupedFields(); track group.name) {
               <div class="space-y-4">
@@ -36,24 +31,24 @@ type ControlValue = number | string | (string | number)[];
                 <div class="grid grid-cols-1 gap-5">
                   @for (field of group.fields; track field.key) {
                     <div>
-                      @if (field.type === 'number') {
+                      @let control = getControl(f, field.key);
+                      @if (field.type === 'number' && control) {
                         <app-input
                           [id]="field.key"
                           [label]="field.label"
                           [description]="field.description"
-                          [control]="getControl(field.key)"
+                          [control]="control"
                           type="number"
+                          [placeholder]="field.placeholder || ''"
                           [prefix]="field.prefix"
                           [suffix]="field.suffix"
-                          [placeholder]="field.placeholder || ''"
                         />
-                      } @else if (field.type === 'select') {
+                      } @else if (field.type === 'select' && control && field.options) {
                         <app-select
-                          [id]="field.key"
-                          [label]="field.label"
-                          [value]="getSelectValue(field.key)"
-                          [options]="field.options || []"
-                          (changed)="updateSelect(field.key, $event)"
+                           [id]="field.key"
+                           [label]="field.label"
+                           [control]="control"
+                           [options]="field.options"
                         />
                       }
                     </div>
@@ -62,162 +57,95 @@ type ControlValue = number | string | (string | number)[];
               </div>
             }
           </div>
-          
-          <div class="flex justify-end pt-2">
-            <button 
-                type="button" 
-                (click)="fg.reset()"
-                class="text-xs font-bold text-text-muted hover:text-red-600 uppercase tracking-widest flex items-center gap-2 transition-colors group"
-            >
-                <lucide-icon name="trash-2" class="w-4 h-4 transition-transform group-hover:scale-110" />
-                Clear Inputs
-            </button>
-          </div>
         </form>
       </div>
     }
-  `,
-  host: {
-    '(window:keydown.escape)': 'handleEscape()',
-    '(window:keydown.enter)': 'handleEnter($event)'
-  }
+  `
 })
-export class CalculatorFormComponent implements OnDestroy {
-  readonly config = input<CalculatorConfig>();
-  readonly data = input<CalculatorData>();
-  readonly valid = output<boolean>();
+export class CalculatorFormComponent {
+  readonly config = input.required<CalculatorConfig>();
+  readonly data = input.required<CalculatorData>();
+
   readonly dataChanged = output<{ key: string; value: CalculatorData[string] }>();
+  readonly valid = output<boolean>();
 
   protected readonly groupedFields = computed(() => {
-    const cfg = this.config();
-    if (!cfg) return [];
+    const fields = this.config().fields;
+    const groups: { name: string; fields: FieldConfig[] }[] = [];
 
-    const groups = new Map<string, FieldConfig[]>();
-    // Ensure default group exists if any field uses it or has no group
-    if (cfg.fields.some(f => !f.group || f.group === 'default')) {
-      groups.set('default', []);
-    }
-
-    cfg.fields.forEach(f => {
-      const gName = f.group || 'default';
-      if (!groups.has(gName)) groups.set(gName, []);
-      groups.get(gName)!.push(f);
+    // Group fields by 'group' property
+    const grouped = new Map<string, FieldConfig[]>();
+    fields.forEach(f => {
+      const g = f.group || 'default';
+      if (!grouped.has(g)) grouped.set(g, []);
+      grouped.get(g)?.push(f);
     });
 
-    return Array.from(groups.entries()).map(([name, fields]) => ({ name, fields }));
+    // Default first, then others
+    if (grouped.has('default')) {
+      groups.push({ name: 'default', fields: grouped.get('default')! });
+      grouped.delete('default');
+    }
+
+    grouped.forEach((fs, name) => groups.push({ name, fields: fs }));
+    return groups;
   });
 
-  protected formGroup = signal<FormGroup<Record<string, FormControl<ControlValue>>> | null>(null);
+  // Create the form model source derived from input data
+  private readonly modelSource = linkedSignal({
+    source: this.data,
+    computation: (d) => d
+  });
 
-  private fb = inject(NonNullableFormBuilder);
-  private sub = new Subscription();
+  // Create the form with dynamic validators
+  protected readonly formResult = computed(() => {
+    return form(this.modelSource, (schema) => {
+      const fields = this.config().fields;
+      const controls = schema as Record<string, unknown>;
+
+      fields.forEach(f => {
+        const field = controls[f.key] as Parameters<typeof required>[0];
+
+        if (f.required) {
+          required(field);
+        }
+        if (typeof f.min === 'number') {
+          min(field as Parameters<typeof min>[0], f.min);
+        }
+        if (typeof f.max === 'number') {
+          max(field as Parameters<typeof max>[0], f.max);
+        }
+      });
+    });
+  });
 
   constructor() {
-    effect((onCleanup) => {
-      const cfg = this.config();
-      if (!cfg) {
-        untracked(() => this.formGroup.set(null));
-        return;
-      }
-
-      this.createForm(cfg);
-
-      onCleanup(() => {
-        this.sub.unsubscribe();
-        this.sub = new Subscription(); // Reset sub
-      });
-    });
-
-    // Data Sync Effect
+    // Track form invalid state
     effect(() => {
-      const externalData = this.data();
-      const fg = this.formGroup();
-      if (fg && externalData) {
-        untracked(() => {
-          fg.patchValue(externalData, { emitEvent: false });
-          this.valid.emit(fg.valid);
+      const f = this.formResult();
+      if (f && typeof (f as any).valid === 'function') {
+        this.valid.emit((f as any).valid());
+      }
+    });
+
+    // Check for changes in the model and emit them
+    effect(() => {
+      const val = this.modelSource();
+      untracked(() => {
+        Object.keys(val).forEach(key => {
+          if (this.oldVal[key] !== (val as any)[key]) {
+            this.dataChanged.emit({ key, value: (val as any)[key] });
+          }
         });
-      }
-    });
-  }
-
-  private createForm(cfg: CalculatorConfig) {
-    const controls: Record<string, FormControl<ControlValue>> = {};
-    cfg.fields.forEach(field => {
-      const validators = this.buildValidators(field);
-      const initial = this.getInitialValue(field);
-
-      if (field.type === 'select') {
-        controls[field.key] = this.fb.control(String(initial), { validators });
-        return;
-      }
-
-      controls[field.key] = this.fb.control(Number(initial), { validators });
-    });
-
-    const fg = this.fb.group(controls);
-
-    const sub = fg.valueChanges.pipe(debounceTime(50)).subscribe(vals => {
-      Object.keys(vals).forEach(key => {
-        this.updateData(key, vals[key] as CalculatorData[string]);
+        this.oldVal = JSON.parse(JSON.stringify(val));
       });
-      this.valid.emit(fg.valid);
-    });
-
-    this.sub.add(sub);
-
-    untracked(() => {
-      this.formGroup.set(fg);
-      this.valid.emit(fg.valid);
     });
   }
 
-  private getInitialValue(field: FieldConfig): ControlValue {
-    const external = untracked(() => this.data()?.[field.key]);
-    if (field.type === 'select') {
-      const first = field.options?.[0]?.value ?? '';
-      return (external ?? field.defaultValue ?? first) as ControlValue;
-    }
-    return Number(external ?? field.defaultValue ?? 0);
-  }
+  // Helper for tracking previous value
+  private oldVal: any = {};
 
-  private buildValidators(field: FieldConfig): ValidatorFn[] {
-    const validators: ValidatorFn[] = [];
-    if (field.required) validators.push(Validators.required);
-    if (typeof field.min === 'number') validators.push(Validators.min(field.min));
-    if (typeof field.max === 'number') validators.push(Validators.max(field.max));
-    return validators;
-  }
-
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
-  }
-
-  protected getControl(key: string): FormControl<ControlValue> {
-    const fg = this.formGroup();
-    return fg?.get(key) as FormControl<ControlValue>;
-  }
-
-  protected getSelectValue(key: string): string | number {
-    const val = this.getControl(key).value;
-    if (Array.isArray(val)) return '';
-    return val;
-  }
-
-  protected updateSelect(key: string, value: string): void {
-    this.getControl(key).setValue(value);
-  }
-
-  protected updateData(key: string, value: CalculatorData[string]): void {
-    this.dataChanged.emit({ key, value });
-  }
-
-  protected handleEscape(): void {
-    this.formGroup()?.reset();
-  }
-
-  protected handleEnter(event: Event): void {
-    if (event.target instanceof HTMLTextAreaElement) return;
-    (event.target as HTMLElement).blur();
+  protected getControl(formGroup: any, key: string): FormValueControl<any> | undefined {
+    return formGroup[key];
   }
 }
