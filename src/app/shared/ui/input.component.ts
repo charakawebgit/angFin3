@@ -1,12 +1,11 @@
 import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
 import { Field, FormValueControl } from '@angular/forms/signals';
 import { LucideAngularModule } from 'lucide-angular';
 
 
 @Component({
   selector: 'app-input',
-  imports: [ReactiveFormsModule, LucideAngularModule, Field],
+  imports: [LucideAngularModule, Field],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex flex-col gap-1.5 w-full">
