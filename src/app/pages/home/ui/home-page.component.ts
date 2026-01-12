@@ -109,7 +109,7 @@ export class HomePageComponent {
   protected readonly searchState = signal({ query: '' });
   protected readonly searchForm = form(this.searchState) as any;
 
-  protected readonly searchQuery = computed(() => this.searchForm.query.value());
+  protected readonly searchQuery = computed(() => this.searchState().query);
   protected readonly activeCategory = signal('All');
 
   // Load registry

@@ -27,7 +27,8 @@ import { form, required, min, max } from '@angular/forms/signals';
               <div class="p-6 lg:p-8 grow">
                  <div class="space-y-8">
                    <div class="mb-6">
-                      <a routerLink="/" class="grow flex items-center text-xs font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest mb-4 transition-colors">
+                      <a routerLink="/" class="grow flex items-center text-sm font-bold text-slate-500 hover:text-blue-600 uppercase tracking-widest mb-4 transition-colors py-2">
+                        <lucide-icon name="chevron-left" class="w-4 h-4 mr-1" />
                         Directory
                       </a>
                       <h1 class="text-2xl font-bold text-slate-900 tracking-tight">{{ cfg.title }}</h1>
