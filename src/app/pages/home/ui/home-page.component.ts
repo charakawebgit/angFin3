@@ -1,14 +1,14 @@
 import { Component, computed, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
+import { form, Field } from '@angular/forms/signals';
 import { CALCULATOR_REGISTRY } from '@entities/calculator/model/registry';
 
 @Component({
-    selector: 'app-home-page',
-    imports: [RouterLink, FormsModule, LucideAngularModule],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    template: `
+  selector: 'app-home-page',
+  imports: [RouterLink, LucideAngularModule, Field],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
     <div class="min-h-screen bg-surface-subtle font-sans text-text-main selection:bg-primary/10 selection:text-primary">
       
       <!-- Hero Section -->
@@ -19,7 +19,7 @@ import { CALCULATOR_REGISTRY } from '@entities/calculator/model/registry';
              v2.0 Professional
           </div>
           <h1 class="text-4xl lg:text-6xl font-black tracking-tight text-text-main mb-4">
-            Advanced Financial <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover">Analytics</span>
+            Advanced Financial <span class="bg-clip-text text-transparent bg-linear-to-r from-primary to-primary-hover">Analytics</span>
           </h1>
           <p class="text-lg text-text-muted max-w-2xl mx-auto leading-relaxed">
             Professional-grade valuation models, risk metrics, and portfolio analysis tools. 
@@ -32,7 +32,7 @@ import { CALCULATOR_REGISTRY } from '@entities/calculator/model/registry';
               <lucide-icon name="search" class="w-5 h-5 text-text-muted group-focus-within:text-primary transition-colors" />
             </div>
             <input 
-              [(ngModel)]="searchQuery"
+              [field]="searchForm.query"
               type="text" 
               placeholder="Search calculators (e.g. 'WACC', 'Black-Scholes')..." 
               class="w-full h-14 pl-12 pr-4 bg-surface border border-border-default rounded-2xl shadow-sm text-base font-medium placeholder:text-text-muted focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all hover:border-text-muted"
@@ -88,7 +88,7 @@ import { CALCULATOR_REGISTRY } from '@entities/calculator/model/registry';
               </div>
               
               <h3 class="text-lg font-bold text-text-main mb-2 group-hover:text-primary transition-colors">{{ calc.title }}</h3>
-              <p class="text-sm text-text-muted line-clamp-2 leading-relaxed mb-4 flex-grow">{{ calc.description }}</p>
+              <p class="text-sm text-text-muted line-clamp-2 leading-relaxed mb-4 grow">{{ calc.description }}</p>
 
               <div class="flex items-center text-xs font-bold text-text-muted uppercase tracking-wider group-hover:text-primary transition-colors mt-auto">
                  Open Tool <lucide-icon name="arrow-right" class="w-3.5 h-3.5 ml-1 transition-transform group-hover:translate-x-1" />
@@ -106,25 +106,28 @@ import { CALCULATOR_REGISTRY } from '@entities/calculator/model/registry';
   `
 })
 export class HomePageComponent {
-    protected readonly searchQuery = signal('');
-    protected readonly activeCategory = signal('All');
+  protected readonly searchState = signal({ query: '' });
+  protected readonly searchForm = form(this.searchState) as any;
 
-    // Load registry
-    private readonly calculators = signal(CALCULATOR_REGISTRY);
+  protected readonly searchQuery = computed(() => this.searchForm.query.value());
+  protected readonly activeCategory = signal('All');
 
-    protected readonly categories = computed(() => {
-        const cats = new Set(this.calculators().map(c => c.category));
-        return Array.from(cats).sort();
+  // Load registry
+  private readonly calculators = signal(CALCULATOR_REGISTRY);
+
+  protected readonly categories = computed(() => {
+    const cats = new Set(this.calculators().map(c => c.category));
+    return Array.from(cats).sort();
+  });
+
+  protected readonly filteredCalculators = computed(() => {
+    const q = this.searchQuery().toLowerCase();
+    const cat = this.activeCategory();
+
+    return this.calculators().filter(c => {
+      const matchesSearch = c.title.toLowerCase().includes(q) || c.description.toLowerCase().includes(q);
+      const matchesCat = cat === 'All' || c.category === cat;
+      return matchesSearch && matchesCat;
     });
-
-    protected readonly filteredCalculators = computed(() => {
-        const q = this.searchQuery().toLowerCase();
-        const cat = this.activeCategory();
-
-        return this.calculators().filter(c => {
-            const matchesSearch = c.title.toLowerCase().includes(q) || c.description.toLowerCase().includes(q);
-            const matchesCat = cat === 'All' || c.category === cat;
-            return matchesSearch && matchesCat;
-        });
-    });
+  });
 }
